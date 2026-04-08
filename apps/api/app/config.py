@@ -21,8 +21,15 @@ class Settings(BaseSettings):
     debug: bool = False
     version: str = "1.0.0"
 
-    # CORS
+    # CORS - Configure via env var BACKEND_CORS_ORIGINS as comma-separated list
     backend_cors_origins: List[str] = ["http://localhost:3000"]
+    
+    def model_post_init(self, __context):
+        """Parse CORS origins from environment variable if provided."""
+        import os
+        cors_env = os.getenv("BACKEND_CORS_ORIGINS")
+        if cors_env:
+            self.backend_cors_origins = [origin.strip() for origin in cors_env.split(",")]
 
     # Database
     database_url: str = "sqlite+aiosqlite:///./talentmatch.db"
